@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beatnik Technologies</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0d0d10; --ink-dim: #3a3a45; --surface: #f4f3ef;
+    --gold: #c9a84c; --pale: #e8e6de;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); overflow-x: hidden; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(244,243,239,0.72);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+  }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; letter-spacing: 0.04em; color: var(--ink); }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a { font-size: 0.85rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; color: var(--ink-dim); transition: color 0.2s; }
+  .nav-links a:hover { color: var(--ink); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    position: relative; overflow: hidden; padding: 7rem 3rem 4rem;
+    background: linear-gradient(160deg, #0d0d10 0%, #16162a 55%, #1a1a2e 100%);
+  }
+  .hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
+  .orb1 { width: 520px; height: 520px; top: -120px; right: -80px; background: rgba(201,168,76,0.18); }
+  .orb2 { width: 380px; height: 380px; bottom: -60px; left: 5%; background: rgba(100,100,200,0.14); }
+  .orb3 { width: 260px; height: 260px; top: 30%; left: 25%; background: rgba(255,255,255,0.04); }
+
+  .hero-label { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.4rem; opacity: 0; animation: fadeUp 0.9s 0.2s forwards; }
+  .hero-title { font-family: 'Syne', sans-serif; font-size: clamp(3rem, 7vw, 6rem); font-weight: 800; line-height: 1.0; color: #fff; opacity: 0; animation: fadeUp 0.9s 0.4s forwards; }
+  .hero-title .highlight { display: inline-block; background: linear-gradient(90deg, var(--gold), #e8c87a, var(--gold)); background-size: 200%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: shimmer 4s linear infinite; }
+  .hero-sub { max-width: 520px; margin-top: 1.8rem; font-size: 1.05rem; line-height: 1.7; color: rgba(255,255,255,0.62); opacity: 0; animation: fadeUp 0.9s 0.6s forwards; }
+  .hero-cta { display: flex; gap: 1rem; margin-top: 2.8rem; opacity: 0; animation: fadeUp 0.9s 0.8s forwards; }
+
+  .btn-primary { display: inline-block; padding: 0.85rem 2rem; background: var(--gold); color: #0d0d10; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.04em; text-decoration: none; border-radius: 4px; transition: transform 0.2s, box-shadow 0.2s; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(201,168,76,0.4); }
+  .btn-ghost { display: inline-block; padding: 0.85rem 2rem; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.18); font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.9rem; letter-spacing: 0.04em; text-decoration: none; border-radius: 4px; backdrop-filter: blur(10px); transition: background 0.2s, border-color 0.2s; }
+  .btn-ghost:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.35); }
+
+  .rotating-words { display: inline-block; overflow: hidden; vertical-align: bottom; height: 1em; position: relative; }
+  .word-cycle { display: flex; flex-direction: column; animation: wordCycle 6s steps(1,end) infinite; }
+  .word-cycle span { display: block; height: 1em; line-height: 1; background: linear-gradient(90deg, #7eb8ff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  .hero-scroll { position: absolute; bottom: 2.5rem; left: 3rem; display: flex; align-items: center; gap: 0.6rem; color: rgba(255,255,255,0.35); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0; animation: fadeUp 1s 1.2s forwards; }
+  .scroll-line { width: 40px; height: 1px; background: rgba(255,255,255,0.25); }
+
+  /* ── SECTIONS ── */
+  section { padding: 6rem 3rem; }
+  .section-tag { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; display: block; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.15; color: var(--ink); max-width: 640px; }
+  .section-title.light { color: #fff; }
+  .section-body { margin-top: 1rem; font-size: 1.0rem; line-height: 1.75; color: var(--ink-dim); max-width: 560px; }
+  .section-body.light { color: rgba(255,255,255,0.6); }
+
+  /* ── ABOUT ── */
+  .about { background: var(--surface); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-top: 3.5rem; }
+  .about-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .stat-card { background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.07); backdrop-filter: blur(12px); border-radius: 12px; padding: 1.5rem; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; color: var(--ink); line-height: 1; }
+  .stat-num span { color: var(--gold); }
+  .stat-label { font-size: 0.82rem; color: var(--ink-dim); margin-top: 0.4rem; }
+
+  /* ── VENTURES ── */
+  .ventures { background: linear-gradient(180deg, #0d0d10 0%, #111120 100%); position: relative; overflow: hidden; }
+  .ventures::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 800px 600px at 80% 50%, rgba(201,168,76,0.06) 0%, transparent 70%); pointer-events: none; }
+  .ventures-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3.5rem; }
+  .ventures-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+
+  .venture-card { position: relative; border-radius: 16px; overflow: hidden; padding: 2.2rem; cursor: pointer; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); backdrop-filter: blur(18px); transition: transform 0.3s, border-color 0.3s, background 0.3s; }
+  .venture-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); }
+  .venture-card::before { content: ''; position: absolute; top: -60px; right: -60px; width: 180px; height: 180px; border-radius: 50%; filter: blur(50px); transition: opacity 0.4s; opacity: 0.7; }
+  .venture-card:hover::before { opacity: 1; }
+
+  .card-planet::before { background: rgba(120,200,120,0.25); }
+  .card-fox::before    { background: rgba(255,160,60,0.25); }
+  .card-rover::before  { background: rgba(80,160,255,0.25); }
+  .card-carbon::before { background: rgba(160,255,200,0.2); }
+
+  .venture-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.4rem; border: 1px solid rgba(255,255,255,0.12); }
+  .icon-planet { background: rgba(120,200,120,0.18); }
+  .icon-fox    { background: rgba(255,160,60,0.18); }
+  .icon-rover  { background: rgba(80,160,255,0.18); }
+  .icon-carbon { background: rgba(100,230,180,0.18); }
+
+  .venture-tag { font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 0.5rem; display: block; }
+  .venture-name { font-family: 'Syne', sans-serif; font-size: 1.7rem; font-weight: 700; color: #fff; line-height: 1.1; margin-bottom: 0.85rem; }
+  .venture-desc { font-size: 0.9rem; line-height: 1.7; color: rgba(255,255,255,0.55); }
+  .venture-pill { display: inline-block; margin-top: 1.4rem; padding: 0.35rem 0.9rem; border-radius: 999px; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); transition: border-color 0.3s, color 0.3s; }
+  .venture-card:hover .venture-pill { border-color: rgba(255,255,255,0.35); color: rgba(255,255,255,0.9); }
+
+  /* ── PHILOSOPHY ── */
+  .philosophy { background: var(--pale); }
+  .phil-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
+  .phil-card { background: rgba(255,255,255,0.65); border: 1px solid rgba(255,255,255,0.9); backdrop-filter: blur(16px); border-radius: 14px; padding: 2rem; }
+  .phil-num { font-family: 'Syne', sans-serif; font-size: 2.8rem; font-weight: 800; color: var(--pale); -webkit-text-stroke: 1.5px var(--gold); line-height: 1; margin-bottom: 1rem; }
+  .phil-title { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--ink); margin-bottom: 0.6rem; }
+  .phil-body { font-size: 0.88rem; line-height: 1.7; color: var(--ink-dim); }
+
+  /* ── CONTACT ── */
+  .contact { background: #0d0d10; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 7rem 3rem; position: relative; overflow: hidden; }
+  .contact::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 700px 500px at 50% 100%, rgba(201,168,76,0.09) 0%, transparent 65%); pointer-events: none; }
+  .contact-tag { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; opacity: 0; animation: fadeUp 0.9s 0.05s forwards; }
+  .contact-title { font-family: 'Syne', sans-serif; font-size: clamp(2.5rem,5vw,4rem); font-weight: 800; color: #fff; line-height: 1.1; max-width: 640px; opacity: 0; animation: fadeUp 0.9s 0.2s forwards; }
+  .contact-sub { margin-top: 1.2rem; color: rgba(255,255,255,0.5); font-size: 1rem; line-height: 1.7; max-width: 440px; opacity: 0; animation: fadeUp 0.9s 0.35s forwards; }
+  .contact-email { margin-top: 2.5rem; display: inline-block; padding: 1rem 2.5rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; backdrop-filter: blur(12px); font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 600; color: var(--gold); text-decoration: none; transition: background 0.2s, border-color 0.2s; opacity: 0; animation: fadeUp 0.9s 0.5s forwards; }
+  .contact-email:hover { background: rgba(255,255,255,0.12); border-color: var(--gold); }
+
+  /* ── FOOTER ── */
+  footer { background: #07070a; padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); }
+  .footer-logo { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; color: rgba(255,255,255,0.4); letter-spacing: 0.06em; }
+  .footer-logo span { color: var(--gold); opacity: 0.8; }
+  .footer-note { font-size: 0.78rem; color: rgba(255,255,255,0.22); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+  @keyframes wordCycle {
+    0%,24%  { transform: translateY(0); }
+    25%,49% { transform: translateY(-1em); }
+    50%,74% { transform: translateY(-2em); }
+    75%,99% { transform: translateY(-3em); }
+  }
+
+  /* ── SCROLL REVEALS ── */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.75s, transform 0.75s; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.10s; }
+  .reveal-delay-2 { transition-delay: 0.22s; }
+  .reveal-delay-3 { transition-delay: 0.34s; }
+  .reveal-delay-4 { transition-delay: 0.46s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.2rem; }
+    .nav-links a { font-size: 0.75rem; }
+    section { padding: 4rem 1.5rem; }
+    .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .ventures-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .ventures-grid { grid-template-columns: 1fr; }
+    .phil-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 0.75rem; text-align: center; }
+  }
+</style> <meta name="google-site-verification" content="DPwRCIhrUG3W6MW_ltpkVGbfYv16Nke_9dPW3IBdctQ" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">BEATNIK<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#ventures">Ventures</a></li>
+    <li><a href="#philosophy">Philosophy</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+  <div class="hero-orb orb3"></div>
+
+  <p class="hero-label">Beatnik Technologies Private Limited</p>
+  <h1 class="hero-title">
+    Building the future<br>of
+    <span class="rotating-words">
+      <span class="word-cycle">
+        <span>intelligence.</span>
+        <span>sustainability.</span>
+        <span>travel.</span>
+        <span>carbon.</span>
+      </span>
+    </span>
+  </h1>
+  <p class="hero-sub">
+    We craft AI-powered tools that solve the world's most pressing challenges — from environmental stewardship to seamless human experience.
+  </p>
+  <div class="hero-cta">
+    <a href="#ventures" class="btn-primary">Explore Ventures</a>
+    <a href="#about" class="btn-ghost">Our Mission</a>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <span class="section-tag reveal">Who we are</span>
+  <h2 class="section-title reveal reveal-delay-1">Technology with<br>purpose and precision.</h2>
+  <div class="about-grid">
+    <div>
+      <p class="section-body reveal reveal-delay-2">
+        Beatnik Technologies is a deep-tech venture studio building AI-native applications at the intersection of sustainability, travel, and enterprise intelligence.
+      </p>
+      <p class="section-body reveal reveal-delay-3" style="margin-top:1rem;">
+        We believe the most meaningful technology disappears — leaving only the outcome. Every product we build is designed to be invisible in its complexity, yet transformative in its impact.
+      </p>
+    </div>
+    <div class="about-stat-grid">
+      <div class="stat-card reveal reveal-delay-1">
+        <div class="stat-num">4<span>+</span></div>
+        <div class="stat-label">AI-powered products in the market</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-2">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Ambition to solve hard problems</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-3">
+        <div class="stat-num">1<span>st</span></div>
+        <div class="stat-label">Principles — impact over output</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-4">
+        <div class="stat-num">0<span>x</span></div>
+        <div class="stat-label">Tolerance for mediocrity</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VENTURES -->
+<section class="ventures" id="ventures">
+  <div class="ventures-header">
+    <div>
+      <span class="section-tag reveal">Our ventures</span>
+      <h2 class="section-title light reveal reveal-delay-1">Four products.<br>One vision.</h2>
+    </div>
+    <p class="section-body light reveal" style="max-width:300px; text-align:right; font-size:0.88rem;">
+      Each venture tackles a distinct, high-impact domain with AI at its core.
+    </p>
+  </div>
+
+  <div class="ventures-grid">
+    <!-- Planet -->
+    <div class="venture-card card-planet reveal reveal-delay-1">
+      <div class="venture-icon icon-planet">🌍</div>
+      <span class="venture-tag">Enterprise AI</span>
+      <div class="venture-name">Planet</div>
+      <p class="venture-desc">
+        An AI applications desk that brings enterprise-grade intelligence to your workflow. Planet orchestrates AI agents, automates decision pipelines, and becomes the cognitive layer your organisation didn't know it needed.
+      </p>
+      <span class="venture-pill">AI · Automation · Enterprise</span>
+    </div>
+
+    <!-- Fox -->
+    <div class="venture-card card-fox reveal reveal-delay-2">
+      <div class="venture-icon icon-fox">🦊</div>
+      <span class="venture-tag">Sustainability & ESG</span>
+      <div class="venture-name">Fox</div>
+      <p class="venture-desc">
+        A sustainability, ESG, and sustainable tourism AI agent. Fox helps organisations measure, manage, and communicate their environmental footprint — transforming compliance into competitive advantage.
+      </p>
+      <span class="venture-pill">ESG · Climate · Tourism</span>
+    </div>
+
+    <!-- Rover -->
+    <div class="venture-card card-rover reveal reveal-delay-3">
+      <div class="venture-icon icon-rover">🧭</div>
+      <span class="venture-tag">Travel Intelligence</span>
+      <div class="venture-name">Rover</div>
+      <p class="venture-desc">
+        Your all-in-one AI travel companion. Rover plans, books, advises, and adapts — understanding context, preferences, and the unexpected to make every journey effortless from departure to arrival.
+      </p>
+      <span class="venture-pill">Travel · AI Companion · UX</span>
+    </div>
+
+    <!-- CarbonHub -->
+    <div class="venture-card card-carbon reveal reveal-delay-4">
+      <div class="venture-icon icon-carbon">♻️</div>
+      <span class="venture-tag">Carbon Markets</span>
+      <div class="venture-name">CarbonHub</div>
+      <p class="venture-desc">
+        An all-in-one hub for carbon markets, credits, and climate intelligence. CarbonHub demystifies the voluntary carbon market, giving buyers, sellers, and analysts the tools to act with confidence and clarity.
+      </p>
+      <span class="venture-pill">Carbon Credits · Markets · Data</span>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section class="philosophy" id="philosophy">
+  <span class="section-tag reveal">How we think</span>
+  <h2 class="section-title reveal reveal-delay-1">Principles that<br>guide everything.</h2>
+  <div class="phil-grid">
+    <div class="phil-card reveal reveal-delay-1">
+      <div class="phil-num">01</div>
+      <div class="phil-title">AI as infrastructure</div>
+      <p class="phil-body">Intelligence should be woven into the fabric of tools, not bolted on as a feature. We design AI-native from day one.</p>
+    </div>
+    <div class="phil-card reveal reveal-delay-2">
+      <div class="phil-num">02</div>
+      <div class="phil-title">Impact before scale</div>
+      <p class="phil-body">We obsess over solving the right problem at depth before expanding horizontally. Depth of value over breadth of reach.</p>
+    </div>
+    <div class="phil-card reveal reveal-delay-3">
+      <div class="phil-num">03</div>
+      <div class="phil-title">The planet is a stakeholder</div>
+      <p class="phil-body">Across every product, environmental accountability is a design constraint — not an afterthought or a marketing message.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <p class="contact-tag">Get in touch</p>
+  <h2 class="contact-title">Let's build something<br>that matters.</h2>
+  <p class="contact-sub">We're always interested in partnerships, pilots, and conversations that push these ideas further.</p>
+  <a href="mailto:shourabhgupta88@gmail.com" class="contact-email">shourabhgupta88@gmail.com</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">BEATNIK<span>.</span>TECHNOLOGIES</div>
+  <div class="footer-note">© 2025 Beatnik Technologies Private Limited. All rights reserved.</div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
